@@ -1,11 +1,41 @@
 import React, { useState, useEffect } from "react";
 
 // Use this form for both POST and PUT requests!
-export default function DogForm({ values, setValues, isUpdating }) {
+export default function DogForm({
+  values,
+  setValues,
+  isUpdating,
+  setIsUpdating,
+  fetchDogs,
+  initialForm,
+  navigate,
+}) {
   const [breeds, setBreeds] = useState();
 
   const onSubmit = (event) => {
     event.preventDefault();
+    navigate("/");
+    const url = isUpdating
+      ? `http://localhost:3003/api/dogs/${values.id}`
+      : "http://localhost:3003/api/dogs";
+
+    fetch(url, {
+      method: isUpdating ? "PUT" : "POST",
+      body: JSON.stringify({
+        name: values.name,
+        breed: values.breed,
+        adopted: values.adopted,
+      }),
+      headers: new Headers({
+        "Content-Type": "application/json",
+      }),
+    })
+      .then(() => {
+        fetchDogs();
+        setValues(initialForm);
+      })
+      .catch((err) => console.error("Failed to save dog", err));
+    setIsUpdating(false);
   };
   const onChange = (event) => {
     const { name, value, type, checked } = event.target;

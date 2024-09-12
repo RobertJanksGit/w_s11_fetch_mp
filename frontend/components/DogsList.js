@@ -6,28 +6,8 @@ export default function DogsList({
   setValues,
   navigate,
   setIsUpdating,
+  fetchDogs,
 }) {
-  const fetchDogs = () => {
-    fetch("http://localhost:3003/api/dogs")
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("Network response was not OK");
-        }
-        const contentType = res.headers.get("Content-Type");
-        if (contentType.includes("application/json")) {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        setDogs(data);
-      })
-      .catch((err) => console.error("Failed to GET dogs", err));
-  };
-
-  useEffect(() => {
-    fetchDogs();
-  }, []);
-
   const handleDelete = (evt) => {
     const id = evt.target.id;
     fetch(`http://localhost:3003/api/dogs/${id}`, { method: "DELETE" })
@@ -41,6 +21,7 @@ export default function DogsList({
       (dog) => dog.id === parseInt(evt.target.id, 10)
     );
     setValues({
+      id: filteredDog.id,
       name: `${filteredDog.name}`,
       breed: `${filteredDog.breed}`,
       adopted: filteredDog.adopted,
